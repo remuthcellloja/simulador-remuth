@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulador de Taxas - Remuth Cell</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    body { background: #f2f2f2; margin: 0; padding: 24px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 520px; background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.1); padding: 20px; }
+    h1 { text-align: center; font-size: 24px; margin-bottom: 4px; }
+    .sub { text-align: center; color: #555; font-size: 13px; margin-bottom: 20px; }
+    label { font-size: 14px; margin-bottom: 4px; display: block; }
+    input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; margin-bottom: 12px; }
+    button { width: 100%; padding: 12px; border-radius: 8px; border: 0; background: #111; color: #fff; font-size: 16px; cursor: pointer; font-weight: bold; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 13px; }
+    th, td { border: 1px solid #999; padding: 8px; text-align: center; }
+    th { background: #c5c5c5; }
+    tbody tr:nth-child(odd) td { background: #111; color: #fff; }
+    tbody tr:nth-child(even) td { background: #e1e1e1; color: #000; }
+    .foot { text-align: center; margin-top: 16px; font-size: 12px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Remuth Cell</h1>
+    <p class="sub">Simulador de Taxas do Cartão</p>
+
+    <label>Valor líquido desejado (R$)</label>
+    <input id="valor" type="text" placeholder="Ex: 1000,00">
+
+    <button onclick="calcular()">Calcular</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Parcelas</th>
+          <th>Valor da Parcela</th>
+          <th>Total a Cobrar</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+
+    <p class="foot">Criado para Remuth Cell • Personalizado</p>
+  </div>
+
+<script>
+const TAXAS = {
+  debito: 0.0000,
+  1: 0.0316, 2: 0.0457, 3: 0.0539, 4: 0.0618, 5: 0.0697,
+  6: 0.0775, 7: 0.0893, 8: 0.0968, 9: 0.1044, 10: 0.1120,
+  11: 0.1196, 12: 0.1262, 13: 0.1384, 14: 0.1419, 15: 0.1512,
+  16: 0.1606, 17: 0.1701, 18: 0.1796
+};
+
+function brToNum(v) {
+  return parseFloat(v.replace(/\./g,"").replace(",","."));
+}
+
+function numToBR(v) {
+  return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+
+function calcular() {
+  const valor = brToNum(document.getElementById("valor").value);
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+
+  if (!valor || valor <= 0) { alert("Digite um valor válido!"); return; }
+
+  for (let p = 1; p <= 18; p++) {
+    const taxa = TAXAS[p];
+    const total = valor / (1 - taxa);
+    const parcela = total / p;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${p}x</td>
+      <td>${numToBR(parcela)}</td>
+      <td>${numToBR(total)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+</script>
+</body>
+</html>
